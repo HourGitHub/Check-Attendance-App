@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dashboard{% endblock %}</title>
+    <!-- CSS files, Bootstrap, etc. -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Additional CSS for styling -->
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            overflow: auto;
+            height: 100%;
+            margin: 0;
+        }
+        .sidebar {
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 220px;
+            background-color: #f8f9fa;
+            padding-top: 20px;
+            border-right: 1px solid #e7e7e7;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        .content {
+            margin-left: 220px;
+            padding: 20px;
+            height: auto;
+            overflow-y: auto;
+        }
+        .chart-container, .table-container {
+            margin-bottom: 20px;
+        }
+        .table-container table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .table-container th, .table-container td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        .table-container th {
+            background-color: #f2f2f2;
+        }
+
+        .navbar {
+            position: sticky; /* Make the navbar sticky */
+            top: 0; /* Position it at the top of the viewport */
+            z-index: 1000; /* Ensure the navbar stays on top of other content */
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Your App</a>
+        <button class="navbar-toggler" type="button" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="ml-auto">
+            {% if current_user.is_authenticated %}
+                <div class="dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-user-circle"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="#">Profile</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a>
+                    </div>
+                </div>
+            {% else %}
+                <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="sidebar">
+        <div class="text-center profile-section">
+            <img src="{{ url_for('static', filename='img/profile.png') }}" class="img-fluid rounded-circle" alt="Profile Image">
+            <h5>{{ current_user.username }}</h5>
+            <p>ID: {{ current_user.id }}</p>
+        </div>
+        <hr>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="/dashboard">
+                    <i class="fa fa-home"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/attendances">
+                    <i class="fa fa-calendar-check"></i> Attendances
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/kpi">
+                    <i class="fa fa-chart-line"></i> KPI
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/leave">
+                    <i class="fa fa-calendar-times"></i> Leave
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/overtime">
+                    <i class="fa fa-clock"></i> Overtime
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/notification">
+                    <i class="fa fa-bell"></i> Notifications
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/settings">
+                    <i class="fa fa-cog"></i> Settings
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/report">
+                    <i class="fa fa-file-alt"></i> Report
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="content">
+
+        <div class="filter-date mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+        <h5>Admin Dashboard</h5>
+        <div class="d-flex align-items-center">
+            <h5 class="mr-3">Filter Date</h5>
+            <form class="form-inline">
+                <div class="form-group mx-sm-2 mb-2">
+                    <label for="startDate" class="sr-only">Start Date</label>
+                    <input type="date" id="startDate" name="startDate" class="form-control" placeholder="Start Date">
+                </div>
+                <div class="form-group mx-sm-2 mb-2">
+                    <label for="endDate" class="sr-only">End Date</label>
+                    <input type="date" id="endDate" name="endDate" class="form-control" placeholder="End Date">
+                </div>
+                <button type="submit" class="btn btn-primary mb-2">Apply</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+        <!-- Charts -->
+        <div class="chart-container">
+            <div class="row">
+                <!-- Chart for Active Employees -->
+                <div class="col-md-4">
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            Active Employees
+                        </div>
+                        <div class="card-body">
+                            <canvas id="activeEmployeesChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <!-- Chart for Attendances -->
+                <div class="col-md-4">
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            Attendances
+                        </div>
+                        <div class="card-body">
+                            <canvas id="attendancesChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <!-- Chart for Request Leaves -->
+                <div class="col-md-4">
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            Request Leaves
+                        </div>
+                        <div class="card-body">
+                            <canvas id="requestLeavesChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Chart for Absents -->
+                <div class="col-md-4">
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            Absents
+                        </div>
+                        <div class="card-body">
+                            <canvas id="absentsChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <!-- Chart for Holidays -->
+                <div class="col-md-4">
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            Holidays
+                        </div>
+                        <div class="card-body">
+                            <canvas id="holidaysChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <!-- Chart for Day Off -->
+                <div class="col-md-4">
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            Day Off
+                        </div>
+                        <div class="card-body">
+                            <canvas id="dayOffChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tables -->
+        <div class="table-container">
+            <!-- Table for Attendances -->
+            <h5>Attendances</h5>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Name</th>
+                        <th>Check In</th>
+                        <th>Check Out</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Loop through attendances data here -->
+                    <tr>
+                        <td>1</td>
+                        <td>John Doe</td>
+                        <td>08:00 AM</td>
+                        <td>05:00 PM</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Jane Smith</td>
+                        <td>08:30 AM</td>
+                        <td>04:30 PM</td>
+                    </tr>
+                    <!-- Add more rows as needed -->
+                </tbody>
+            </table>
+
+            <!-- Tables for Absents, Holidays, Day Off -->
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Absents</h5>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Name</th>
+                                <th>Noted</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Loop through absents data here -->
+                            <tr>
+                                <td>1</td>
+                                <td>John Doe</td>
+                                <td>Sick leave</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Jane Smith</td>
+                                <td>Personal leave</td>
+                            </tr>
+                            <!-- Add more rows as needed -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-4">
+                    <h5>Holidays</h5>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Name</th>
+                                <th>Noted</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Loop through holidays data here -->
+                            <tr>
+                                <td>1</td>
+                                <td>New Year</td>
+                                <td>National holiday</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Christmas</td>
+                                <td>Religious holiday</td>
+                            </tr>
+                            <!-- Add more rows as needed -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-4">
+                    <h5>Day Off</h5>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Name</th>
+                                <th>Noted</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Loop through day off data here -->
+                            <tr>
+                                <td>1</td>
+                                <td>Annual Leave</td>
+                                <td>Planned vacation</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Personal Day</td>
+                                <td>Personal reasons</td>
+                            </tr>
+                            <!-- Add more rows as needed -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript files, Bootstrap, etc. -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Chart.js for chart rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Sample data for charts (replace with actual data)
+        var activeEmployeesData = {
+            labels: ['January', 'February', 'March', 'April', 'May'],
+            datasets: [{
+                label: 'Active Employees',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1,
+                data: [50, 45, 55, 48, 52]
+            }]
+        };
+
+        var attendancesData = {
+            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+            datasets: [{
+                label: 'Attendance Count',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+                data: [30, 25, 32, 28]
+            }]
+        };
+
+        var requestLeavesData = {
+            labels: ['January', 'February', 'March', 'April', 'May'],
+            datasets: [{
+                label: 'Request Leaves',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+                data: [8, 12, 10, 9, 11]
+            }]
+        };
+
+        var absentsData = {
+            labels: ['January', 'February', 'March', 'April', 'May'],
+            datasets: [{
+                label: 'Absents',
+                backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                borderColor: 'rgba(255, 206, 86, 1)',
+                borderWidth: 1,
+                data: [3, 5, 4, 2, 6]
+            }]
+        };
+
+        var holidaysData = {
+            labels: ['January', 'February', 'March', 'April', 'May'],
+            datasets: [{
+                label: 'Holidays',
+                backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                borderColor: 'rgba(153, 102, 255, 1)',
+                borderWidth: 1,
+                data: [2, 3, 2, 1, 2]
+            }]
+        };
+
+        var dayOffData = {
+            labels: ['January', 'February', 'March', 'April', 'May'],
+            datasets: [{
+                label: 'Day Off',
+                backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                borderColor: 'rgba(255, 159, 64, 1)',
+                borderWidth: 1,
+                data: [4, 3, 5, 6, 4]
+            }]
+        };
+
+        // Chart configuration
+        var chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        };
+
+        // Initialize charts
+        var activeEmployeesChart = new Chart(document.getElementById('activeEmployeesChart'), {
+            type: 'bar',
+            data: activeEmployeesData,
+            options: chartOptions
+        });
+
+        var attendancesChart = new Chart(document.getElementById('attendancesChart'), {
+            type: 'line',
+            data: attendancesData,
+            options: chartOptions
+        });
+
+        var requestLeavesChart = new Chart(document.getElementById('requestLeavesChart'), {
+            type: 'bar',
+            data: requestLeavesData,
+            options: chartOptions
+        });
+
+        var absentsChart = new Chart(document.getElementById('absentsChart'), {
+            type: 'line',
+            data: absentsData,
+            options: chartOptions
+        });
+
+        var holidaysChart = new Chart(document.getElementById('holidaysChart'), {
+            type: 'bar',
+            data: holidaysData,
+            options: chartOptions
+        });
+
+        var dayOffChart = new Chart(document.getElementById('dayOffChart'), {
+            type: 'line',
+            data: dayOffData,
+            options: chartOptions
+        });
+    </script>
+</body>
+</html>

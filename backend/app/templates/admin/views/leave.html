@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dashboard{% endblock %}</title>
+    <!-- CSS files, Bootstrap, etc. -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <!-- Additional CSS for styling -->
+    <style>
+        body {
+
+            overflow-x: hidden; /* Hide horizontal scrollbar */
+        }
+        .sidebar {
+            position: fixed;
+            bottom: 0;
+            top: 0;
+            left: 0;
+            z-index: 100;
+            overflow-y: auto;
+            border-right: 1px solid #dee2e6; /* Optional: Add a border for separation */
+        }
+        .main-content {
+            margin-left: 20px; /* Adjust based on your sidebar width */
+            padding-top: 10px;
+            padding-bottom: 20px;
+            overflow-y: auto;
+            height: calc(100vh - 56px); /* Adjust height to fill remaining viewport */
+            overflow-x: hidden; /* Hide horizontal scrollbar */
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Your App</a>
+        <button class="navbar-toggler" type="button" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="ml-auto">
+            {% if current_user.is_authenticated %}
+                <div class="dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-user-circle"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="#">Profile</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a>
+                    </div>
+                </div>
+            {% else %}
+                <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="sidebar">
+        <div class="text-center profile-section">
+            <img src="{{ url_for('static', filename='img/profile.png') }}" class="img-fluid rounded-circle" alt="Profile Image">
+            <h5>{{ current_user.username }}</h5>
+            <p>ID: {{ current_user.id }}</p>
+        </div>
+        <hr>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="/dashboard">
+                    <i class="fa fa-home"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/attendances">
+                    <i class="fa fa-calendar-check"></i> Attendances
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/kpi">
+                    <i class="fa fa-chart-line"></i> KPI
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/leave">
+                    <i class="fa fa-calendar-times"></i> Leave
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/overtime">
+                    <i class="fa fa-clock"></i> Overtime
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/notification">
+                    <i class="fa fa-bell"></i> Notifications
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/settings">
+                    <i class="fa fa-cog"></i> Settings
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/report">
+                    <i class="fa fa-file-alt"></i> Report
+                </a>
+            </li>
+        </ul>
+    </div>
+
+<main class="main-content">
+    <div class="container-fluid">
+        <div class="col-md-10 ml-sm-auto col-lg-10 px-4">
+            <div class="pt-3 pb-2 mb-3 border-bottom">
+                <h5>Leave Request</h5>
+            </div>
+
+            <!-- Form content -->
+            <div class="card-body">
+                <form id="leaveRequestForm">
+                    <div class="form-group">
+                        <label for="leaveType">Leave Type:</label>
+                        <select id="leaveType" name="leaveType" class="form-control">
+                            <option value="vacation">Vacation</option>
+                            <option value="sick">Sick Leave</option>
+                            <option value="personal">Personal Leave</option>
+                            <!-- Add more options as needed -->
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="startDate">Start Date:</label>
+                            <input type="date" id="startDate" name="startDate" class="form-control">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="startTime">Start Time:</label>
+                            <input type="time" id="startTime" name="startTime" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="endDate">End Date:</label>
+                            <input type="date" id="endDate" name="endDate" class="form-control">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="endTime">End Time:</label>
+                            <input type="time" id="endTime" name="endTime" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reason">Reason:</label>
+                        <textarea id="reason" name="reason" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="backupEmployee">Backup Employee:</label>
+                        <input type="text" id="backupEmployee" name="backupEmployee" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="attachments">Attachments:</label>
+                        <input type="file" id="attachments" name="attachments" class="form-control-file">
+                    </div>
+                    <div class="form-group">
+                        <label for="notifyPeople">Notify People:</label>
+                        <input type="text" id="notifyPeople" name="notifyPeople" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="additionalInformation">Additional Information:</label>
+                        <textarea id="additionalInformation" name="additionalInformation" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="additionalReason">Additional Reason:</label>
+                        <textarea id="additionalReason" name="additionalReason" class="form-control" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-submit btn-block">Submit Request</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- JavaScript files, Bootstrap, etc. -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<!-- Chart.js for chart rendering -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Initialize DataTables -->
+<script>
+    $(document).ready(function() {
+        $('#leaveRequestForm').submit(function(event) {
+            event.preventDefault();
+            alert('Leave request submitted successfully.');
+            // Add your form submission logic here (
+            });
+    });
+</script>
+</body>
+</html>

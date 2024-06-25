@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dashboard{% endblock %}</title>
+    <!-- CSS files, Bootstrap, etc. -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <!-- Additional CSS for styling -->
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            overflow: auto;
+            height: 100%;
+            margin: 0;
+        }
+        .sidebar {
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 220px;
+            background-color: #f8f9fa;
+            padding-top: 20px;
+            border-right: 1px solid #e7e7e7;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        .content {
+            margin-left: 220px;
+            padding: 20px;
+            height: auto;
+            overflow-y: auto;
+        }
+        .chart-container, .table-container {
+            margin-bottom: 20px;
+        }
+        .table-container table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .table-container th, .table-container td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        .table-container th {
+            background-color: #f2f2f2;
+        }
+        .navbar {
+            position: sticky; /* Make the navbar sticky */
+            top: 0; /* Position it at the top of the viewport */
+            z-index: 1000; /* Ensure the navbar stays on top of other content */
+        }
+        .status-dot {
+            height: 12px;
+            width: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .status-dot.green {
+            background-color: green;
+        }
+        .status-dot.red {
+            background-color: red;
+        }
+        .action-icons .btn {
+            padding: 5px;
+            margin: 0 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Your App</a>
+        <button class="navbar-toggler" type="button" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="ml-auto">
+            {% if current_user.is_authenticated %}
+                <div class="dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-user-circle"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="#">Profile</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a>
+                    </div>
+                </div>
+            {% else %}
+                <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="sidebar">
+        <div class="text-center profile-section">
+            <img src="{{ url_for('static', filename='img/profile.png') }}" class="img-fluid rounded-circle" alt="Profile Image">
+            <h5>{{ current_user.username }}</h5>
+            <p>ID: {{ current_user.id }}</p>
+        </div>
+        <hr>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="/dashboard">
+                    <i class="fa fa-home"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/attendances">
+                    <i class="fa fa-calendar-check"></i> Attendances
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/kpi">
+                    <i class="fa fa-chart-line"></i> KPI
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/leave">
+                    <i class="fa fa-calendar-times"></i> Leave
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/overtime">
+                    <i class="fa fa-clock"></i> Overtime
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/notification">
+                    <i class="fa fa-bell"></i> Notifications
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/settings">
+                    <i class="fa fa-cog"></i> Settings
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/report">
+                    <i class="fa fa-file-alt"></i> Report
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5>Attendances</h5>
+            <div class="d-flex align-items-center">
+                <h5 class="mr-3">Filter Date</h5>
+                <form class="form-inline">
+                    <div class="form-group mx-sm-2 mb-2">
+                        <label for="startDate" class="sr-only">Start Date</label>
+                        <input type="date" id="startDate" name="startDate" class="form-control" placeholder="Start Date">
+                    </div>
+                    <div class="form-group mx-sm-2 mb-2">
+                        <label for="endDate" class="sr-only">End Date</label>
+                        <input type="date" id="endDate" name="endDate" class="form-control" placeholder="End Date">
+                    </div>
+                    <button type="submit" class="btn btn-primary mb-2">Apply</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tables Section -->
+        <div class="table-container">
+            <table id="attendanceTable" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Name</th>
+                        <th>Position</th>
+                        <th>Email</th>
+                        <th>Check In</th>
+                        <th>Check Out</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Sample Data, this should be populated dynamically in a real application -->
+                    <tr>
+                        <td>1</td>
+                        <td>John Doe</td>
+                        <td>Software Engineer</td>
+                        <td>john.doe@example.com</td>
+                        <td>08:00 AM</td>
+                        <td>05:00 PM</td>
+                        <td>2024-06-24</td>
+                        <td><span class="status-dot green"></span> Present</td>
+                        <td class="action-icons">
+                            <button class="btn btn-info btn-sm"><i class="fa fa-info-circle"></i></button>
+                            <button class="btn btn-primary btn-sm"><i class="fa fa-eye"></i></button>
+                            <button class="btn btn-warning btn-sm"><i class="fa fa-file-export"></i></button>
+                            <button class="btn btn-success btn-sm"><i class="fa fa-calendar-day"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Jane Smith</td>
+                        <td>Product Manager</td>
+                        <td>jane.smith@example.com</td>
+                        <td>08:30 AM</td>
+                        <td>04:30 PM</td>
+                        <td>2024-06-24</td>
+                        <td><span class="status-dot red"></span> Absent</td>
+                        <td class="action-icons">
+                            <button class="btn btn-info btn-sm"><i class="fa fa-info-circle"></i></button>
+                            <button class="btn btn-primary btn-sm"><i class="fa fa-eye"></i></button>
+                            <button class="btn btn-warning btn-sm"><i class="fa fa-file-export"></i></button>
+                            <button class="btn btn-success btn-sm"><i class="fa fa-calendar-day"></i></button>
+                        </td>
+                    </tr>
+                    <!-- Add more rows as needed -->
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- JavaScript files, Bootstrap, etc. -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <!-- Chart.js for chart rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Initialize DataTables -->
+    <script>
+        $(document).ready(function() {
+            $('#attendanceTable').DataTable({
+                "pageLength": 10
+            });
+        });
+    </script>
+</body>
+</html>

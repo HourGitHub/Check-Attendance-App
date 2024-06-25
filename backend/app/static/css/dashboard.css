@@ -1,0 +1,81 @@
+*{
+    font-family: 'Arial', sans-serif;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.sidebar {
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 220px;
+    background-color: #f8f9fa;
+    padding-top: 20px;
+    border-right: 1px solid #e7e7e7;
+    overflow-y: auto;
+}
+
+.content {
+    margin-left: 220px;
+    padding: 20px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.chart-container {
+    margin-bottom: 20px;
+}
+
+.chart-card {
+    margin-bottom: 20px;
+}
+
+.table-container {
+    margin-top: 20px;
+}
+
+.table-container table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.table-container th,
+.table-container td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+}
+
+.table-container th {
+    background-color: #f2f2f2;
+}
+
+/* dashboard.css */
+
+/* Adjusting filter date card */
+.filter-date {
+    margin-bottom: 20px;
+    /* Add some bottom margin to separate from charts */
+}
+
+.filter-date .card-body {
+    padding: 15px;
+    /* Adjust padding for inner content */
+}
+
+.filter-date form {
+    margin-bottom: 0;
+    /* Remove default margin bottom from form */
+}
+
+.filter-date .form-group {
+    margin-bottom: 10px;
+    /* Add margin between form groups */
+}
+
+.filter-date .btn-primary {
+    padding: 8px 20px;
+    /* Adjust button padding */
+}
