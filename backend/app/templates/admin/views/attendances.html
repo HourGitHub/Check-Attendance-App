@@ -69,6 +69,9 @@
         .status-dot.red {
             background-color: red;
         }
+        .status-dot.orange {
+            background-color: orange;
+        }
         .action-icons .btn {
             padding: 5px;
             margin: 0 2px;
@@ -177,11 +180,11 @@
                     <tr>
                         <th>No</th>
                         <th>Name</th>
-                        <th>Position</th>
-                        <th>Email</th>
                         <th>Check In</th>
                         <th>Check Out</th>
                         <th>Date</th>
+                        <th>Late</th>
+                        <th>Working Hours</th>
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
@@ -191,12 +194,12 @@
                     <tr>
                         <td>1</td>
                         <td>John Doe</td>
-                        <td>Software Engineer</td>
-                        <td>john.doe@example.com</td>
-                        <td>08:00 AM</td>
+                        <td>08:30 AM</td>
                         <td>05:00 PM</td>
                         <td>2024-06-24</td>
-                        <td><span class="status-dot green"></span> Present</td>
+                        <td>00:30</td>
+                        <td>08:30</td>
+                        <td><span class="status-dot orange"></span> Late</td>
                         <td class="action-icons">
                             <button class="btn btn-info btn-sm"><i class="fa fa-info-circle"></i></button>
                             <button class="btn btn-primary btn-sm"><i class="fa fa-eye"></i></button>
@@ -207,11 +210,11 @@
                     <tr>
                         <td>2</td>
                         <td>Jane Smith</td>
-                        <td>Product Manager</td>
-                        <td>jane.smith@example.com</td>
-                        <td>08:30 AM</td>
-                        <td>04:30 PM</td>
+                        <td></td>
+                        <td></td>
                         <td>2024-06-24</td>
+                        <td></td>
+                        <td></td>
                         <td><span class="status-dot red"></span> Absent</td>
                         <td class="action-icons">
                             <button class="btn btn-info btn-sm"><i class="fa fa-info-circle"></i></button>

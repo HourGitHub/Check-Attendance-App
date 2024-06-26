@@ -90,11 +90,83 @@
     </div>
 
     <div class="content">
+        <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h5>Notifications</h5>
+            <h2>Telegram Bots</h2>
+            <div>
+                <button class="btn btn-primary" id="addBotBtn">Add Telegram Bot</button>
+                <button class="btn btn-success" id="pushAllBtn">Push All Notifications</button>
+            </div>
         </div>
+        <table id="telegramBotTable" class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Bot Token</th>
+                    <th>Chat ID</th>
+                    <th>Status</th>
+                    <th>Info</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bot in telegram_bots %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ bot.bot_token }}</td>
+                    <td>{{ bot.chat_id }}</td>
+                    <td>{{ bot.status }}</td>
+                    <td>{{ bot.info }}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm edit-btn" data-id="{{ bot.id }}">Edit</button>
+                        <button class="btn btn-danger btn-sm delete-btn" data-id="{{ bot.id }}">Delete</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-        <!-- Tables Section -->
+    <!-- Modals -->
+    <!-- Add/Edit Modal -->
+    <div class="modal fade" id="botModal" tabindex="-1" aria-labelledby="botModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="botModalLabel">Add Telegram Bot</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="botForm">
+                        <div class="form-group">
+                            <label for="botToken">Bot Token</label>
+                            <input type="text" class="form-control" id="botToken" name="bot_token" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="chatId">Chat ID</label>
+                            <input type="text" class="form-control" id="chatId" name="chat_id" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="status">Status</label>
+                            <select class="form-control" id="status" name="status">
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="info">Information</label>
+                            <textarea class="form-control" id="info" name="info" rows="3"></textarea>
+                        </div>
+                        <input type="hidden" id="botId" name="id">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     
 
     </div>
@@ -106,5 +178,73 @@
     <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
  
+    <!-- Initialize DataTable and Handle CRUD Operations -->
+    <script>
+        $(document).ready(function() {
+            var table = $('#telegramBotTable').DataTable({
+                paging: true,
+                searching: true,
+                order: [[0, 'asc']],
+                lengthChange: true,
+                info: true
+            });
+
+            $('#addBotBtn').on('click', function() {
+                $('#botForm')[0].reset();
+                $('#botModalLabel').text('Add Telegram Bot');
+                $('#botModal').modal('show');
+            });
+
+            $(document).on('click', '.edit-btn', function() {
+                var id = $(this).data('id');
+                $.get('/admin/telegram-bot/' + id, function(data) {
+                    $('#botModalLabel').text('Edit Telegram Bot');
+                    $('#botId').val(data.id);
+                    $('#botToken').val(data.bot_token);
+                    $('#chatId').val(data.chat_id);
+                    $('#status').val(data.status);
+                    $('#info').val(data.info);
+                    $('#botModal').modal('show');
+                });
+            });
+
+            $(document).on('click', '.delete-btn', function() {
+                if (confirm('Are you sure you want to delete this Telegram bot?')) {
+                    var id = $(this).data('id');
+                    $.ajax({
+                        url: '/admin/telegram-bot/delete/' + id,
+                        type: 'DELETE',
+                        success: function(result) {
+                            location.reload();
+                        }
+                    });
+                }
+            });
+
+            $('#botForm').on('submit', function(e) {
+                e.preventDefault();
+                var id = $('#botId').val();
+                var url = id ? '/admin/telegram-bot/edit/' + id : '/admin/telegram-bot/add';
+                var method = id ? 'PUT' : 'POST';
+
+                $.ajax({
+                    url: url,
+                    type: method,
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        bot_token: $('#botToken').val(),
+                        chat_id: $('#chatId').val(),
+                        status: $('#status').val(),
+                        info: $('#info').val()
+                    }),
+                    success: function(response) {
+                        $('#botModal').modal('hide');
+                        location.reload();
+                    }
+                });
+            });
+        });
+    </script>
+    
 </body>
 </html>
