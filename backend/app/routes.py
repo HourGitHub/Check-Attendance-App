@@ -41,6 +41,11 @@ def get_dashboard_data():
 def dashboard_user():
     return render_template('admin/views/dashboard.html')
 
+@app.route('/dashboardtest')
+@login_required
+def dashboard_user1():
+    return render_template('admin/views/dashboard1.html')
+
 
 @app.route('/attendances')
 @login_required
