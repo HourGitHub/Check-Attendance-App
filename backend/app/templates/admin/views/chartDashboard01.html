@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your App</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="content">
+        <main role="main" class="px-4">
+            <div class="chart-container">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card chart-card">
+                            <div class="card-header">Active Employees</div>
+                            <div class="card-body">
+                                <canvas id="activeEmployeesChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card chart-card">
+                            <div class="card-header">Attendances</div>
+                            <div class="card-body">
+                                <canvas id="attendancesChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card chart-card">
+                            <div class="card-header">Request Leaves</div>
+                            <div class="card-body">
+                                <canvas id="requestLeavesChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card chart-card">
+                            <div class="card-header">Absents</div>
+                            <div class="card-body">
+                                <canvas id="absentsChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card chart-card">
+                            <div class="card-header">Holidays</div>
+                            <div class="card-body">
+                                <canvas id="holidaysChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card chart-card">
+                            <div class="card-header">Day Off</div>
+                            <div class="card-body">
+                                <canvas id="dayOffChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+
+    <!-- JavaScript files -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   

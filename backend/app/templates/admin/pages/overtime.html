@@ -17,98 +17,16 @@
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Your App</a>
-    <button class="navbar-toggler" type="button" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="ml-auto">
-        {% if current_user.is_authenticated %}
-            <div class="dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fa fa-user-circle"></i>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="#">Profile</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a>
-                </div>
-            </div>
-        {% else %}
-            <a class="nav-link" href="{{ url_for('login') }}">Login</a>
-        {% endif %}
-    </div>
-</nav>
+    {% include "admin/views/header.html" %}
 
-<div class="sidebar">
-    <div class="text-center profile-section">
-        <img src="{{ url_for('static', filename='img/profile.png') }}" class="img-fluid rounded-circle" alt="Profile Image">
-        <h5>{{ current_user.username }}</h5>
-        <p>ID: {{ current_user.id }}</p>
-    </div>
-    <hr>
-    <ul class="nav flex-column">
-        <li class="nav-item">
-            <a class="nav-link" href="/dashboard">
-                <i class="fa fa-home"></i> Dashboard
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/attendances">
-                <i class="fa fa-calendar-check"></i> Attendances
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/kpi">
-                <i class="fa fa-chart-line"></i> KPI
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/leave">
-                <i class="fa fa-calendar-times"></i> Leave
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/overtime">
-                <i class="fa fa-clock"></i> Overtime
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/notification">
-                <i class="fa fa-bell"></i> Notifications
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/settings">
-                <i class="fa fa-cog"></i> Settings
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/report">
-                <i class="fa fa-file-alt"></i> Report
-            </a>
-        </li>
-    </ul>
-</div>
+    {% include "admin/views/leftSidebar.html" %}
 
 <div class="content">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="mt-3 mb-3">Overtime Requests</h3>
-        <div class="d-flex align-items-center">
-            <h5 class="mr-3">Filter Date</h5>
-            <form class="form-inline">
-                <div class="form-group mx-sm-2 mb-2">
-                    <label for="startDate" class="sr-only">Start Date</label>
-                    <input type="date" id="startDate" name="startDate" class="form-control" placeholder="Start Date">
-                </div>
-                <div class="form-group mx-sm-2 mb-2">
-                    <label for="endDate" class="sr-only">End Date</label>
-                    <input type="date" id="endDate" name="endDate" class="form-control" placeholder="End Date">
-                </div>
-                <button type="submit" class="btn btn-primary mb-2">Apply</button>
-            </form>
-            
-        </div>
+
+        {% include "admin/views/filterDate.html" %}
+    
     </div>
 
     <!-- Tables Section -->

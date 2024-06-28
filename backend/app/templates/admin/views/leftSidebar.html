@@ -1,0 +1,51 @@
+<!-- sidebar.html -->
+<div class="sidebar">
+    <div class="text-center profile-section">
+        <img src="{{ url_for('static', filename='img/profile01.jpg') }}" class="img-fluid rounded-circle" alt="Profile Image">
+        <h5>{{ current_user.username }}</h5>
+        <p>ID: {{ current_user.id }}</p>
+    </div>
+    <hr>
+    <ul class="nav flex-column">
+        <li class="nav-item">
+            <a class="nav-link" href="/dashboard">
+                <i class="fa fa-home"></i> Dashboard
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/attendances">
+                <i class="fa fa-calendar-check"></i> Attendances
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/kpi">
+                <i class="fa fa-chart-line"></i> KPI
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/leave">
+                <i class="fa fa-calendar-times"></i> Leave
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/overtime">
+                <i class="fa fa-clock"></i> Overtime
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/notification">
+                <i class="fa fa-bell"></i> Notifications
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/settings">
+                <i class="fa fa-cog"></i> Settings
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/report">
+                <i class="fa fa-file-alt"></i> Report
+            </a>
+        </li>
+    </ul>
+</div>

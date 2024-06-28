@@ -39,47 +39,47 @@ def get_dashboard_data():
 @app.route('/dashboard')
 @login_required
 def dashboard_user():
-    return render_template('admin/views/dashboard.html')
+    return render_template('admin/pages/dashboard.html')
 
 @app.route('/dashboardtest')
 @login_required
 def dashboard_user1():
-    return render_template('admin/views/dashboard1.html')
+    return render_template('admin/pages/dashboard1.html')
 
 
 @app.route('/attendances')
 @login_required
 def attendances_user():
-    return render_template('admin/views/attendances.html')
+    return render_template('admin/pages/attendances.html')
 
 @app.route('/kpi')
 @login_required
 def kpi_user():
-    return render_template('admin/views/kpi.html')
+    return render_template('admin/pages/kpi.html')
 
 @app.route('/leave')
 @login_required
 def leave_user():
-    return render_template('admin/views/leave.html')
+    return render_template('admin/pages/leave.html')
 
 @app.route('/overtime')
 @login_required
 def overtime_user():
-    return render_template('admin/views/overtime.html')
+    return render_template('admin/pages/overtime.html')
 
 @app.route('/notification')
 @login_required
 def notification_user():
-    return render_template('/admin/views/notifications.html')
+    return render_template('/admin/pages/notifications.html')
 
 @app.route('/settings')
 @login_required
 def setting_user():
-    return render_template('admin/views/setting.html')
+    return render_template('admin/pages/setting.html')
 
 @app.route('/report')
 @login_required
 def report_user():
-    return render_template('admin/views/reports.html')
+    return render_template('admin/pages/reports.html')
 
 

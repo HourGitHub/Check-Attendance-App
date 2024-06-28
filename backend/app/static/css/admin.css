@@ -1,0 +1,126 @@
+/* Reset and Global Styles */
+* {
+    font-family: 'Arial', sans-serif;
+    overflow: auto;
+    height: 100%;
+    margin: 0;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 220px;
+    background-color: #f8f9fa;
+    padding-top: 20px;
+    border-right: 1px solid #e7e7e7;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+}
+
+.sidebar.collapsed {
+    transform: translateX(-100%);
+}
+
+.sidebar .nav-link {
+    color: #333;
+}
+
+.sidebar .nav-link:hover {
+    background-color: #e7e7e7;
+    border-radius: 4px;
+}
+
+.profile-section img {
+    width: 80px;
+    height: 80px;
+}
+
+/* Content Area Styles */
+.content {
+    margin-left: 220px;
+    padding: 20px;
+    height: 100%;
+    overflow-y: auto;
+    transition: margin-left 0.3s ease;
+}
+
+.content.collapsed {
+    margin-left: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.show {
+        transform: translateX(0);
+    }
+
+    .content {
+        margin-left: 0;
+    }
+
+    .navbar-toggler {
+        display: block;
+    }
+}
+
+.navbar-toggler {
+    display: none;
+}
+
+/* Additional Styles */
+.navbar {
+    margin-bottom: 0;
+}
+
+.chart-container,
+.table-container {
+    margin-bottom: 20px;
+}
+
+.table-container table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.table-container th,
+.table-container td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+}
+
+.table-container th {
+    background-color: #f2f2f2;
+}
+
+.status-dot {
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.status-dot.green {
+    background-color: green;
+}
+
+.status-dot.red {
+    background-color: red;
+}
+
+.status-dot.orange {
+    background-color: orange;
+}
+
+.action-icons .btn {
+    padding: 5px;
+    margin: 0 2px;
+}
